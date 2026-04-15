@@ -1,0 +1,41 @@
+[
+  {
+    "id": "usr_41137c00-bb63-471a-8d26-17f10855da30",
+    "email": "ratetest@example.com",
+    "salt": "db532d8693463e0d3f79c31fbdd5cdf7",
+    "passwordHash": "2076f225b0d8be0c5040aa279833631c43487ccbb3ca96fe4638adeaa7dfb0b0c7b326a35be935ee64797af8fda88ae21ff0477bfd6b8b46de3edba44b261335",
+    "role": "user",
+    "failedLoginAttempts": 0,
+    "lockUntil": "2026-03-09T08:33:01.291Z",
+    "resetTokenHash": null,
+    "resetTokenExpiresAt": null,
+    "createdAt": "2026-03-09T08:18:00.367Z",
+    "updatedAt": "2026-03-09T08:18:01.291Z"
+  },
+  {
+    "id": "usr_20d6616c-3e90-4787-9a4e-38601bf39116",
+    "email": "buyer1@example.com",
+    "salt": "2eb112c941bf874a789c5783d8bce81b",
+    "passwordHash": "9bc8a2cddd4802d4be56625f38d7995e4cef65e38bb5f0b2726beb69920a2b959ce8972f85a182a1d1a6bbbb3969708673c41c0a24294882f18f8e91c7d5414c",
+    "role": "admin",
+    "createdAt": "2026-03-09T08:13:39.613Z",
+    "updatedAt": "2026-03-09T08:13:39.804Z",
+    "failedLoginAttempts": 0,
+    "lockUntil": null,
+    "resetTokenHash": null,
+    "resetTokenExpiresAt": null
+  },
+  {
+    "id": "usr_b357b06c-d375-4675-813e-de735a501ec8",
+    "email": "info@azcoglobal.com",
+    "passwordHash": "861d45fb1ae8bca5658ac751b6eee7808f4a02d9ea57e7256587632641aa303e4534be2105f8eb11e5d303d3a79e8b33014c447046627e7869f64821ad7374f3",
+    "salt": "87f5a7fa2c9bd22eb49ea4cb01842df6",
+    "role": "admin",
+    "createdAt": "2026-03-09T08:12:50.824Z",
+    "updatedAt": "2026-03-09T08:28:05.431Z",
+    "failedLoginAttempts": 0,
+    "lockUntil": null,
+    "resetTokenHash": null,
+    "resetTokenExpiresAt": null
+  }
+]
