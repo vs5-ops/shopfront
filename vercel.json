@@ -1,0 +1,6 @@
+{
+  "buildCommand": "cd next-store && npm run build",
+  "devCommand": "cd next-store && npm run dev",
+  "installCommand": "npm install --prefix next-store",
+  "framework": "nextjs"
+}
