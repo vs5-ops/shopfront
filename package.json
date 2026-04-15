@@ -1,0 +1,21 @@
+{
+  "name": "shopfront-site",
+  "version": "1.0.0",
+  "description": "Static storefront with Firebase backend",
+  "scripts": {
+    "build:minify": "npx terser shop.js -o shop.min.js --compress --mangle || echo 'Create shop.js first'",
+    "build:minify-all": "npx terser shop.js -o shop.min.js --compress --mangle && npx terser admin.js -o admin.min.js --compress --mangle && npx terser cart.js -o cart.min.js --compress --mangle && npx terser checkout.js -o checkout.min.js --compress --mangle || echo 'Create JS files before minifying'",
+    "test": "node scripts/check-site.js",
+    "init:firebase": "node scripts/init-firebase-data.js",
+    "backup": "node scripts/backup-firestore.js --all --output data/backup-%DATE%",
+    "backup:products": "node scripts/backup-firestore.js --collection products --output data/products-backup.json",
+    "restore:products": "node scripts/restore-firestore.js --collection products --input data/products-backup.json",
+    "admin:create": "node scripts/create_primary_admin.js"
+  },
+  "devDependencies": {
+    "terser": "^5.19.2"
+  },
+  "dependencies": {
+    "firebase-admin": "^11.10.1"
+  }
+}

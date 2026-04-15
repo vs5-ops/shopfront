@@ -1,0 +1,38 @@
+# Environment and Config Files
+env.local.php
+mail.config.php
+.env
+.env.local
+
+# Node modules
+node_modules/
+package-lock.json
+
+# Backups
+_full_backup/
+cleaned_backup/
+*.backup
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS Files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Firebase
+.firebase/
+firebase-debug.log
+firestore-debug.log
+
+# Temporary files
+*.tmp
+*.temp

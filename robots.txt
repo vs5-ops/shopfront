@@ -1,0 +1,19 @@
+# Robots.txt for AZCO Global
+# Allow all search engines to crawl
+
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /checkout
+Disallow: /orders
+Disallow: /api/
+Disallow: /login
+Disallow: /register
+Disallow: /reset-password
+Disallow: /notifications
+
+# Reduce crawl delay for faster indexing
+Crawl-delay: 0.5
+
+# Sitemap location
+Sitemap: https://www.azcoglobal.com/sitemap.xml
