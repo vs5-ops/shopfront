@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Static storefront with Firebase backend",
   "scripts": {
+    "dev": "cd next-store && npm run dev",
+    "build": "cd next-store && npm run build",
+    "start": "cd next-store && npm start",
     "build:minify": "npx terser shop.js -o shop.min.js --compress --mangle || echo 'Create shop.js first'",
     "build:minify-all": "npx terser shop.js -o shop.min.js --compress --mangle && npx terser admin.js -o admin.min.js --compress --mangle && npx terser cart.js -o cart.min.js --compress --mangle && npx terser checkout.js -o checkout.min.js --compress --mangle || echo 'Create JS files before minifying'",
     "test": "node scripts/check-site.js",
@@ -16,6 +19,9 @@
     "terser": "^5.19.2"
   },
   "dependencies": {
-    "firebase-admin": "^11.10.1"
+    "firebase-admin": "^11.10.1",
+    "next": "^15.3.0",
+    "react": "19.0.0",
+    "react-dom": "19.0.0"
   }
 }
