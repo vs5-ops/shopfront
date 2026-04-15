@@ -27,7 +27,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     openGraph: {
       title: `${product.title} - AZCO Global`,
       description: `Buy at Rs ${product.price.toLocaleString("en-IN")} with ${discount}% discount`,
-      type: "product",
+      type: "website",
       images: [
         {
           url: product.image,
