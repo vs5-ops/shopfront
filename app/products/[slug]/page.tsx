@@ -1,16 +1,18 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import AddToCartButton from "@/app/_components/AddToCartButton";
-import { CATALOG, getProductBySlug } from "@/lib/catalog";
+import ProductReviews from "@/app/_components/ProductReviews";
+import ReviewSubmitForm from "@/app/_components/ReviewSubmitForm";
+import { getFirestore } from "@/lib/server/firebase-admin";
 
-export function generateStaticParams() {
-  return CATALOG.map((item) => ({ slug: item.slug }));
+interface ProductPageProps {
+  params: Promise<{ slug: string }>;
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
   const resolved = await params;
-  const product = getProductBySlug(resolved.slug);
-  
+  const product = await getProductBySlug(resolved.slug);
+
   if (!product) {
     return {
       title: "Product Not Found | AZCO Global",
@@ -22,7 +24,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
   return {
     title: `${product.title} | Buy Online at AZCO Global`,
-    description: `Buy ${product.title} from ${product.brand} at Rs ${product.price.toLocaleString("en-IN")} on AZCO Global. ${discount}% discount. Rating: ${product.rating}⭐ with ${product.reviews.toLocaleString("en-IN")} reviews.`,
+    description: `Buy ${product.title} from ${product.brand} at Rs ${product.price.toLocaleString("en-IN")} on AZCO Global. ${discount}% discount. Rating: ${product.rating}⭐ with ${product.reviewCount || 0} reviews.`,
     keywords: `${product.title}, ${product.brand}, ${product.category}, buy online, best price`,
     openGraph: {
       title: `${product.title} - AZCO Global`,
@@ -43,11 +45,48 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   };
 }
 
-export default async function ProductDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+async function getProductBySlug(slug: string) {
+  const db = getFirestore();
+  const snapshot = await db.collection("products").where("slug", "==", slug).where("active", "==", true).limit(1).get();
+
+  if (snapshot.empty) {
+    return null;
+  }
+
+  const doc = snapshot.docs[0];
+  const data = doc.data();
+
+  // Get seller information if available
+  let sellerInfo = null;
+  if (data.sellerId) {
+    const sellerDoc = await db.collection("sellers").doc(data.sellerId).get();
+    if (sellerDoc.exists) {
+      const sellerData = sellerDoc.data();
+      sellerInfo = {
+        id: sellerDoc.id,
+        name: sellerData?.name || "Unknown Seller",
+        rating: sellerData?.rating || 0,
+        verified: sellerData?.verificationStatus === "verified",
+      };
+    }
+  }
+
+  return {
+    id: doc.id,
+    ...data,
+    sellerInfo,
+    createdAt: data.createdAt?.toDate?.() || new Date(),
+    updatedAt: data.updatedAt?.toDate?.() || new Date(),
+  };
+}
+
+export default async function ProductDetailPage({ params }: ProductPageProps) {
   const resolved = await params;
-  const product = getProductBySlug(resolved.slug);
+  const product = await getProductBySlug(resolved.slug);
+
   if (!product) {
     notFound();
+  }
   }
 
   const discount = Math.max(0, Math.round(((product.mrp - product.price) / product.mrp) * 100));
@@ -64,7 +103,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
             <p className="product-brand">{product.brand}</p>
             <h1>{product.title}</h1>
             <p className="rating-line">
-              ⭐ {product.rating} ({product.reviews.toLocaleString("en-IN")} verified reviews)
+              ⭐ {product.rating} ({(product.reviewCount || 0).toLocaleString("en-IN")} verified reviews)
             </p>
           </div>
 
@@ -105,10 +144,25 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
           <AddToCartButton product={product} />
 
           {/* Seller Info */}
-          {product.seller && (
+          {product.sellerInfo ? (
+            <div style={{ fontSize: "0.85rem", color: "#555", borderTop: "1px solid #eee", paddingTop: "1rem" }}>
+              <p style={{ margin: "0 0 0.5rem 0" }}>
+                Sold by: <strong style={{ color: "#0066c0" }}>{product.sellerInfo.name}</strong>
+                {product.sellerInfo.verified && (
+                  <span style={{ color: "#4caf50", marginLeft: "0.5rem" }}>✓ Verified Seller</span>
+                )}
+              </p>
+              {product.sellerInfo.rating > 0 && (
+                <p style={{ margin: "0", fontSize: "0.8rem" }}>
+                  Seller Rating: ⭐ {product.sellerInfo.rating.toFixed(1)}
+                </p>
+              )}
+            </div>
+          ) : product.seller ? (
             <p style={{ fontSize: "0.85rem", color: "#0066c0" }}>
               Sold by: <strong>{product.seller}</strong>
             </p>
+          ) : null}
           )}
         </div>
       </div>
@@ -177,23 +231,9 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
 
       {/* Customer Reviews Section */}
       <section style={{ marginTop: "2rem" }} className="card">
-        <h2>Customer Feedback</h2>
-        <div style={{ fontSize: "1.2rem", marginBottom: "1rem" }}>
-          <span style={{ color: "#d32f2f" }}>⭐ {product.rating}</span>
-          <p style={{ fontSize: "0.9rem", color: "#666" }}>Based on {product.reviews.toLocaleString("en-IN")} verified reviews</p>
-        </div>
-        <button style={{
-          padding: "0.75rem 1.5rem",
-          backgroundColor: "#ff9900",
-          color: "white",
-          border: "none",
-          borderRadius: "4px",
-          cursor: "pointer",
-          fontSize: "0.9rem",
-          fontWeight: "600"
-        }}>
-          Share your feedback
-        </button>
+        <h2>Customer Reviews & Ratings</h2>
+        <ProductReviews productId={product.id} />
+        <ReviewSubmitForm productId={product.id} />
       </section>
     </main>
   );

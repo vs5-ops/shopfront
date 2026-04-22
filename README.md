@@ -29,6 +29,28 @@ npm run dev
 
 Open `http://localhost:3000`.
 
+## Online Mode (Firebase)
+
+The app now supports **Firebase Firestore** for persistent online storage:
+
+1. **Local mode** (default): Uses JSON files in `.localdb/`
+   - `DATA_MODE=local` in `.env.local`
+   - Good for development, single-user testing
+
+2. **Firebase mode**: Uses Firestore collections
+   - `DATA_MODE=firebase` in `.env.local`
+   - Requires Firebase project setup and credentials
+   - See [FIREBASE_SETUP.md](./FIREBASE_SETUP.md) for full configuration
+
+Both modes support:
+
+- User registration, login, password reset
+- Order creation and retrieval
+- Admin user management
+- Failed login attempt tracking and account lockout
+
+**Status**: ✅ Both repositories fully implemented and tested. Set `DATA_MODE=firebase` and configure `.env.local` to enable online mode.
+
 ## Local-First Development (Recommended)
 
 This project is set up so you can build fully on your local system first, then switch to online DB later.

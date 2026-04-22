@@ -30,7 +30,9 @@ const defaultFormData = {
 };
 
 export default function AdminProductsPage() {
-  const [products, setProducts] = useState<(FirestoreProduct & { id: string })[]>([]);
+  const [products, setProducts] = useState<
+    (FirestoreProduct & { id: string })[]
+  >([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthLoading, setIsAuthLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -38,6 +40,9 @@ export default function AdminProductsPage() {
   const [formData, setFormData] = useState<any>(defaultFormData);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [amazonUrl, setAmazonUrl] = useState("");
+  const [amazonCategory, setAmazonCategory] = useState("electronics");
+  const [isImporting, setIsImporting] = useState(false);
 
   // Check authentication on mount
   useEffect(() => {
@@ -90,7 +95,7 @@ export default function AdminProductsPage() {
         method,
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(formData),
       });
@@ -126,7 +131,7 @@ export default function AdminProductsPage() {
       const res = await fetch(`/api/products/${id}`, {
         method: "DELETE",
         headers: {
-          "Authorization": `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
 
@@ -143,10 +148,51 @@ export default function AdminProductsPage() {
     }
   };
 
-  const handleEdit = (product: any) => {
-    setFormData(product);
-    setEditingId(product.id);
-    setShowForm(true);
+  const handleAmazonImport = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+
+    if (!currentUser) {
+      setError("You must be logged in to perform this action");
+      return;
+    }
+
+    if (!amazonUrl.trim()) {
+      setError("Please enter an Amazon product URL");
+      return;
+    }
+
+    try {
+      setIsImporting(true);
+      const token = await currentUser.getIdToken();
+
+      const res = await fetch("/api/products/amazon-scrape", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          url: amazonUrl.trim(),
+          category: amazonCategory,
+        }),
+      });
+
+      if (res.ok) {
+        const product = await res.json();
+        alert(`Product "${product.title}" imported successfully!`);
+        setAmazonUrl("");
+        fetchProducts();
+      } else {
+        const errorData = await res.json();
+        setError(errorData.error || "Failed to import product from Amazon");
+      }
+    } catch (error) {
+      console.error("Error importing from Amazon:", error);
+      setError("Error: " + (error as Error).message);
+    } finally {
+      setIsImporting(false);
+    }
   };
 
   if (isAuthLoading) {
@@ -175,7 +221,15 @@ export default function AdminProductsPage() {
       <p>Welcome, {currentUser.email}</p>
 
       {error && (
-        <div style={{ padding: "1rem", backgroundColor: "#ffebee", color: "#d32f2f", borderRadius: "4px", marginBottom: "1rem" }}>
+        <div
+          style={{
+            padding: "1rem",
+            backgroundColor: "#ffebee",
+            color: "#d32f2f",
+            borderRadius: "4px",
+            marginBottom: "1rem",
+          }}
+        >
           {error}
         </div>
       )}
@@ -201,6 +255,102 @@ export default function AdminProductsPage() {
         {showForm ? "Cancel" : "+ Add New Product"}
       </button>
 
+      {/* Amazon Import Section */}
+      <div
+        style={{
+          backgroundColor: "#fff8e1",
+          padding: "1.5rem",
+          borderRadius: "8px",
+          marginBottom: "2rem",
+          border: "1px solid #ffb300",
+        }}
+      >
+        <h3 style={{ marginTop: 0, color: "#f57c00" }}>
+          🚀 Import from Amazon
+        </h3>
+        <p style={{ marginBottom: "1rem", color: "#666" }}>
+          Paste an Amazon product URL to automatically import product details,
+          images, and specifications.
+        </p>
+
+        <form
+          onSubmit={handleAmazonImport}
+          style={{ display: "flex", gap: "1rem", alignItems: "flex-end" }}
+        >
+          <div style={{ flex: 1 }}>
+            <label
+              style={{
+                display: "block",
+                marginBottom: "0.5rem",
+                fontWeight: "500",
+              }}
+            >
+              Amazon Product URL
+            </label>
+            <input
+              type="url"
+              value={amazonUrl}
+              onChange={(e) => setAmazonUrl(e.target.value)}
+              placeholder="https://www.amazon.in/dp/B08N5WRWNW"
+              required
+              style={{
+                width: "100%",
+                padding: "0.75rem",
+                border: "1px solid #ddd",
+                borderRadius: "4px",
+                boxSizing: "border-box",
+              }}
+            />
+          </div>
+
+          <div style={{ minWidth: "150px" }}>
+            <label
+              style={{
+                display: "block",
+                marginBottom: "0.5rem",
+                fontWeight: "500",
+              }}
+            >
+              Category
+            </label>
+            <select
+              value={amazonCategory}
+              onChange={(e) => setAmazonCategory(e.target.value)}
+              style={{
+                width: "100%",
+                padding: "0.75rem",
+                border: "1px solid #ddd",
+                borderRadius: "4px",
+                boxSizing: "border-box",
+              }}
+            >
+              <option value="electronics">Electronics</option>
+              <option value="fashion">Fashion</option>
+              <option value="home">Home</option>
+              <option value="sports">Sports</option>
+              <option value="books">Books</option>
+            </select>
+          </div>
+
+          <button
+            type="submit"
+            disabled={isImporting}
+            style={{
+              padding: "0.75rem 1.5rem",
+              backgroundColor: "#ff9900",
+              color: "white",
+              border: "none",
+              borderRadius: "4px",
+              cursor: isImporting ? "not-allowed" : "pointer",
+              fontWeight: "600",
+              opacity: isImporting ? 0.7 : 1,
+            }}
+          >
+            {isImporting ? "Importing..." : "Import Product"}
+          </button>
+        </form>
+      </div>
+
       {/* Product Form */}
       {showForm && (
         <form
@@ -221,9 +371,16 @@ export default function AdminProductsPage() {
               type="text"
               name="slug"
               value={formData.slug}
-              onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, slug: e.target.value })
+              }
               required
-              style={{ width: "100%", padding: "0.5rem", marginTop: "0.25rem", boxSizing: "border-box" }}
+              style={{
+                width: "100%",
+                padding: "0.5rem",
+                marginTop: "0.25rem",
+                boxSizing: "border-box",
+              }}
             />
           </div>
 
@@ -233,9 +390,16 @@ export default function AdminProductsPage() {
               type="text"
               name="title"
               value={formData.title}
-              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, title: e.target.value })
+              }
               required
-              style={{ width: "100%", padding: "0.5rem", marginTop: "0.25rem", boxSizing: "border-box" }}
+              style={{
+                width: "100%",
+                padding: "0.5rem",
+                marginTop: "0.25rem",
+                boxSizing: "border-box",
+              }}
             />
           </div>
 
@@ -245,9 +409,16 @@ export default function AdminProductsPage() {
               type="text"
               name="brand"
               value={formData.brand}
-              onChange={(e) => setFormData({ ...formData, brand: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, brand: e.target.value })
+              }
               required
-              style={{ width: "100%", padding: "0.5rem", marginTop: "0.25rem", boxSizing: "border-box" }}
+              style={{
+                width: "100%",
+                padding: "0.5rem",
+                marginTop: "0.25rem",
+                boxSizing: "border-box",
+              }}
             />
           </div>
 
@@ -256,8 +427,15 @@ export default function AdminProductsPage() {
             <select
               name="category"
               value={formData.category}
-              onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-              style={{ width: "100%", padding: "0.5rem", marginTop: "0.25rem", boxSizing: "border-box" }}
+              onChange={(e) =>
+                setFormData({ ...formData, category: e.target.value })
+              }
+              style={{
+                width: "100%",
+                padding: "0.5rem",
+                marginTop: "0.25rem",
+                boxSizing: "border-box",
+              }}
             >
               <option value="electronics">Electronics</option>
               <option value="fashion">Fashion</option>
@@ -273,9 +451,16 @@ export default function AdminProductsPage() {
               type="number"
               name="price"
               value={formData.price}
-              onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })}
+              onChange={(e) =>
+                setFormData({ ...formData, price: Number(e.target.value) })
+              }
               required
-              style={{ width: "100%", padding: "0.5rem", marginTop: "0.25rem", boxSizing: "border-box" }}
+              style={{
+                width: "100%",
+                padding: "0.5rem",
+                marginTop: "0.25rem",
+                boxSizing: "border-box",
+              }}
             />
           </div>
 
@@ -285,9 +470,16 @@ export default function AdminProductsPage() {
               type="number"
               name="mrp"
               value={formData.mrp}
-              onChange={(e) => setFormData({ ...formData, mrp: Number(e.target.value) })}
+              onChange={(e) =>
+                setFormData({ ...formData, mrp: Number(e.target.value) })
+              }
               required
-              style={{ width: "100%", padding: "0.5rem", marginTop: "0.25rem", boxSizing: "border-box" }}
+              style={{
+                width: "100%",
+                padding: "0.5rem",
+                marginTop: "0.25rem",
+                boxSizing: "border-box",
+              }}
             />
           </div>
 
@@ -297,9 +489,16 @@ export default function AdminProductsPage() {
               type="number"
               name="stock"
               value={formData.stock}
-              onChange={(e) => setFormData({ ...formData, stock: Number(e.target.value) })}
+              onChange={(e) =>
+                setFormData({ ...formData, stock: Number(e.target.value) })
+              }
               required
-              style={{ width: "100%", padding: "0.5rem", marginTop: "0.25rem", boxSizing: "border-box" }}
+              style={{
+                width: "100%",
+                padding: "0.5rem",
+                marginTop: "0.25rem",
+                boxSizing: "border-box",
+              }}
             />
           </div>
 
@@ -312,8 +511,15 @@ export default function AdminProductsPage() {
               max="5"
               step="0.1"
               value={formData.rating}
-              onChange={(e) => setFormData({ ...formData, rating: Number(e.target.value) })}
-              style={{ width: "100%", padding: "0.5rem", marginTop: "0.25rem", boxSizing: "border-box" }}
+              onChange={(e) =>
+                setFormData({ ...formData, rating: Number(e.target.value) })
+              }
+              style={{
+                width: "100%",
+                padding: "0.5rem",
+                marginTop: "0.25rem",
+                boxSizing: "border-box",
+              }}
             />
           </div>
 
@@ -323,9 +529,16 @@ export default function AdminProductsPage() {
               type="url"
               name="image"
               value={formData.image}
-              onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, image: e.target.value })
+              }
               required
-              style={{ width: "100%", padding: "0.5rem", marginTop: "0.25rem", boxSizing: "border-box" }}
+              style={{
+                width: "100%",
+                padding: "0.5rem",
+                marginTop: "0.25rem",
+                boxSizing: "border-box",
+              }}
             />
           </div>
 
@@ -334,9 +547,16 @@ export default function AdminProductsPage() {
             <textarea
               name="description"
               value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, description: e.target.value })
+              }
               rows={4}
-              style={{ width: "100%", padding: "0.5rem", marginTop: "0.25rem", boxSizing: "border-box" }}
+              style={{
+                width: "100%",
+                padding: "0.5rem",
+                marginTop: "0.25rem",
+                boxSizing: "border-box",
+              }}
             />
           </div>
 
@@ -346,8 +566,15 @@ export default function AdminProductsPage() {
               type="text"
               name="materials"
               value={formData.materials}
-              onChange={(e) => setFormData({ ...formData, materials: e.target.value })}
-              style={{ width: "100%", padding: "0.5rem", marginTop: "0.25rem", boxSizing: "border-box" }}
+              onChange={(e) =>
+                setFormData({ ...formData, materials: e.target.value })
+              }
+              style={{
+                width: "100%",
+                padding: "0.5rem",
+                marginTop: "0.25rem",
+                boxSizing: "border-box",
+              }}
             />
           </div>
 
@@ -357,8 +584,15 @@ export default function AdminProductsPage() {
               type="text"
               name="dimensions"
               value={formData.dimensions}
-              onChange={(e) => setFormData({ ...formData, dimensions: e.target.value })}
-              style={{ width: "100%", padding: "0.5rem", marginTop: "0.25rem", boxSizing: "border-box" }}
+              onChange={(e) =>
+                setFormData({ ...formData, dimensions: e.target.value })
+              }
+              style={{
+                width: "100%",
+                padding: "0.5rem",
+                marginTop: "0.25rem",
+                boxSizing: "border-box",
+              }}
             />
           </div>
 
@@ -368,8 +602,15 @@ export default function AdminProductsPage() {
               type="text"
               name="weight"
               value={formData.weight}
-              onChange={(e) => setFormData({ ...formData, weight: e.target.value })}
-              style={{ width: "100%", padding: "0.5rem", marginTop: "0.25rem", boxSizing: "border-box" }}
+              onChange={(e) =>
+                setFormData({ ...formData, weight: e.target.value })
+              }
+              style={{
+                width: "100%",
+                padding: "0.5rem",
+                marginTop: "0.25rem",
+                boxSizing: "border-box",
+              }}
             />
           </div>
 
@@ -408,19 +649,49 @@ export default function AdminProductsPage() {
         >
           <thead>
             <tr style={{ backgroundColor: "#f5f5f5" }}>
-              <th style={{ padding: "1rem", textAlign: "left", borderBottom: "2px solid #ddd" }}>
+              <th
+                style={{
+                  padding: "1rem",
+                  textAlign: "left",
+                  borderBottom: "2px solid #ddd",
+                }}
+              >
                 Title
               </th>
-              <th style={{ padding: "1rem", textAlign: "left", borderBottom: "2px solid #ddd" }}>
+              <th
+                style={{
+                  padding: "1rem",
+                  textAlign: "left",
+                  borderBottom: "2px solid #ddd",
+                }}
+              >
                 Brand
               </th>
-              <th style={{ padding: "1rem", textAlign: "left", borderBottom: "2px solid #ddd" }}>
+              <th
+                style={{
+                  padding: "1rem",
+                  textAlign: "left",
+                  borderBottom: "2px solid #ddd",
+                }}
+              >
                 Price
               </th>
-              <th style={{ padding: "1rem", textAlign: "left", borderBottom: "2px solid #ddd" }}>
+              <th
+                style={{
+                  padding: "1rem",
+                  textAlign: "left",
+                  borderBottom: "2px solid #ddd",
+                }}
+              >
                 Stock
               </th>
-              <th style={{ padding: "1rem", textAlign: "center", borderBottom: "2px solid #ddd" }}>
+              <th
+                style={{
+                  padding: "1rem",
+                  textAlign: "center",
+                  borderBottom: "2px solid #ddd",
+                }}
+              >
                 Actions
               </th>
             </tr>
@@ -430,7 +701,9 @@ export default function AdminProductsPage() {
               <tr key={product.id} style={{ borderBottom: "1px solid #eee" }}>
                 <td style={{ padding: "1rem" }}>{product.title}</td>
                 <td style={{ padding: "1rem" }}>{product.brand}</td>
-                <td style={{ padding: "1rem" }}>Rs {product.price.toLocaleString("en-IN")}</td>
+                <td style={{ padding: "1rem" }}>
+                  Rs {product.price.toLocaleString("en-IN")}
+                </td>
                 <td style={{ padding: "1rem" }}>{product.stock}</td>
                 <td
                   style={{

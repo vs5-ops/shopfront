@@ -1,5 +1,18 @@
 [
   {
+    "id": "usr_efc1e1b2-cdff-4ae6-8b96-f79330ff5008",
+    "email": "test@example.com",
+    "salt": "60d911cd710e5726033b20298e8829e1",
+    "passwordHash": "2404f2e083072265375eac90b238e8a7b7efea2942547ce22f7e371d7e930daa679ec5121aa4f853bd05617a6c7dfbb33d5066b30e6081a86cb80b535ebfe1df",
+    "role": "user",
+    "failedLoginAttempts": 0,
+    "lockUntil": null,
+    "resetTokenHash": null,
+    "resetTokenExpiresAt": null,
+    "createdAt": "2026-04-20T11:41:16.897Z",
+    "updatedAt": "2026-04-20T11:41:16.897Z"
+  },
+  {
     "id": "usr_41137c00-bb63-471a-8d26-17f10855da30",
     "email": "ratetest@example.com",
     "salt": "db532d8693463e0d3f79c31fbdd5cdf7",
