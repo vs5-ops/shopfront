@@ -1,11 +1,16 @@
 export default function RefundPage() {
   return (
-    <main className="container" style={{ padding: "2rem", maxWidth: "900px", margin: "2rem auto" }}>
+    <main
+      className="container"
+      style={{ padding: "2rem", maxWidth: "900px", margin: "2rem auto" }}
+    >
       <h1>Cancellation & Returns Policy</h1>
-      
+
       <section style={{ marginTop: "2rem" }}>
         <h2>Return Eligibility</h2>
-        <p>You can return products within <strong>7 days of delivery</strong> if:</p>
+        <p>
+          You can return products within <strong>7 days of delivery</strong> if:
+        </p>
         <ul style={{ marginTop: "1rem", paddingLeft: "1.5rem" }}>
           <li>The product is unused and in original condition</li>
           <li>All original packaging and tags are intact</li>
@@ -41,14 +46,19 @@ export default function RefundPage() {
         <ul style={{ marginTop: "1rem", paddingLeft: "1.5rem" }}>
           <li>Refund is initiated within 2-3 business days</li>
           <li>Amount is credited to your original payment method</li>
-          <li>It may take 5-7 business days for the amount to appear in your account</li>
+          <li>
+            It may take 5-7 business days for the amount to appear in your
+            account
+          </li>
           <li>For cash payments, a refund via check/transfer</li>
         </ul>
       </section>
 
       <section style={{ marginTop: "2rem" }}>
         <h2>Cancellations</h2>
-        <p>You can cancel an order <strong>before it's shipped</strong>:</p>
+        <p>
+          You can cancel an order <strong>before it's shipped</strong>:
+        </p>
         <ol style={{ marginTop: "1rem", paddingLeft: "1.5rem" }}>
           <li>Go to your Orders page</li>
           <li>Click on the order to view details</li>

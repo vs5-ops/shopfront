@@ -87,7 +87,6 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
   if (!product) {
     notFound();
   }
-  }
 
   const discount = Math.max(0, Math.round(((product.mrp - product.price) / product.mrp) * 100));
 
@@ -163,7 +162,6 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
               Sold by: <strong>{product.seller}</strong>
             </p>
           ) : null}
-          )}
         </div>
       </div>
 

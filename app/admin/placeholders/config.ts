@@ -205,7 +205,7 @@ export const PLACEHOLDERS: Placeholder[] = [
     category: "SELLERS",
     name: "Multi-Seller System",
     description: "Replace hardcoded seller with proper seller profiles",
-    currentImplementation: "All products use "AZCO Global" hardcoded",
+    currentImplementation: "All products use 'AZCO Global' hardcoded",
     targetImplementation: "Multiple verified sellers with profiles",
     dataSource: "Firestore: sellers collection, products.sellerId reference",
     firebaseCollection: "sellers",

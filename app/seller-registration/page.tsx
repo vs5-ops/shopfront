@@ -28,7 +28,9 @@ export default function SellerRegistrationPage() {
     bankName: "",
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
@@ -38,7 +40,7 @@ export default function SellerRegistrationPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!user) {
       setError("Please log in first to register as a seller");
       router.push("/login");
@@ -57,7 +59,7 @@ export default function SellerRegistrationPage() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           name: formData.name,
@@ -91,7 +93,9 @@ export default function SellerRegistrationPage() {
         router.push("/seller-dashboard");
       }, 2000);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Error registering as seller");
+      setError(
+        err instanceof Error ? err.message : "Error registering as seller",
+      );
     } finally {
       setLoading(false);
     }
@@ -99,251 +103,484 @@ export default function SellerRegistrationPage() {
 
   if (!user) {
     return (
-      <main className="container" style={{ padding: "2rem", maxWidth: "900px", margin: "2rem auto", textAlign: "center" }}>
+      <main
+        className="container"
+        style={{
+          padding: "2rem",
+          maxWidth: "900px",
+          margin: "2rem auto",
+          textAlign: "center",
+        }}
+      >
         <h1>Seller Registration</h1>
         <p style={{ marginTop: "1rem", color: "#d32f2f" }}>
-          Please <a href="/login" style={{ color: "#0066c0" }}>log in</a> first to register as a seller.
+          Please{" "}
+          <a href="/login" style={{ color: "#0066c0" }}>
+            log in
+          </a>{" "}
+          first to register as a seller.
         </p>
       </main>
     );
   }
 
   return (
-    <main className="container" style={{ padding: "2rem", maxWidth: "900px", margin: "2rem auto" }}>
+    <main
+      className="container"
+      style={{ padding: "2rem", maxWidth: "900px", margin: "2rem auto" }}
+    >
       <h1>Become a Shopfront Seller</h1>
-      
+
       <p style={{ marginTop: "1rem", color: "#666", marginBottom: "2rem" }}>
-        Join thousands of sellers on Shopfront Marketplace. Register below to get started.
+        Join thousands of sellers on Shopfront Marketplace. Register below to
+        get started.
       </p>
 
       {success && (
-        <div style={{ padding: "1rem", backgroundColor: "#c8e6c9", color: "#2e7d32", borderRadius: "4px", marginBottom: "2rem" }}>
+        <div
+          style={{
+            padding: "1rem",
+            backgroundColor: "#c8e6c9",
+            color: "#2e7d32",
+            borderRadius: "4px",
+            marginBottom: "2rem",
+          }}
+        >
           ✓ Registration successful! Redirecting to dashboard...
         </div>
       )}
 
       {error && (
-        <div style={{ padding: "1rem", backgroundColor: "#ffebee", color: "#d32f2f", borderRadius: "4px", marginBottom: "2rem" }}>
+        <div
+          style={{
+            padding: "1rem",
+            backgroundColor: "#ffebee",
+            color: "#d32f2f",
+            borderRadius: "4px",
+            marginBottom: "2rem",
+          }}
+        >
           {error}
         </div>
       )}
 
       <form onSubmit={handleSubmit} style={{ display: "grid", gap: "1.5rem" }}>
         <section>
-          <h2 style={{ fontSize: "1.2rem", marginBottom: "1rem" }}>Business Information</h2>
-          
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+          <h2 style={{ fontSize: "1.2rem", marginBottom: "1rem" }}>
+            Business Information
+          </h2>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: "1rem",
+            }}
+          >
             <div>
-              <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "600" }}>
+              <label
+                style={{
+                  display: "block",
+                  marginBottom: "0.5rem",
+                  fontWeight: "600",
+                }}
+              >
                 Business Name *
               </label>
-              <input 
+              <input
                 type="text"
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
                 required
-                style={{ width: "100%", padding: "0.75rem", border: "1px solid #ddd", borderRadius: "4px" }}
+                style={{
+                  width: "100%",
+                  padding: "0.75rem",
+                  border: "1px solid #ddd",
+                  borderRadius: "4px",
+                }}
               />
             </div>
 
             <div>
-              <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "600" }}>
+              <label
+                style={{
+                  display: "block",
+                  marginBottom: "0.5rem",
+                  fontWeight: "600",
+                }}
+              >
                 Email Address *
               </label>
-              <input 
+              <input
                 type="email"
                 name="email"
                 value={formData.email}
                 disabled
-                style={{ width: "100%", padding: "0.75rem", border: "1px solid #ddd", borderRadius: "4px", backgroundColor: "#f5f5f5" }}
+                style={{
+                  width: "100%",
+                  padding: "0.75rem",
+                  border: "1px solid #ddd",
+                  borderRadius: "4px",
+                  backgroundColor: "#f5f5f5",
+                }}
               />
             </div>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginTop: "1rem" }}>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: "1rem",
+              marginTop: "1rem",
+            }}
+          >
             <div>
-              <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "600" }}>
+              <label
+                style={{
+                  display: "block",
+                  marginBottom: "0.5rem",
+                  fontWeight: "600",
+                }}
+              >
                 Phone Number *
               </label>
-              <input 
+              <input
                 type="tel"
                 name="phone"
                 value={formData.phone}
                 onChange={handleChange}
                 required
-                style={{ width: "100%", padding: "0.75rem", border: "1px solid #ddd", borderRadius: "4px" }}
+                style={{
+                  width: "100%",
+                  padding: "0.75rem",
+                  border: "1px solid #ddd",
+                  borderRadius: "4px",
+                }}
               />
             </div>
 
             <div>
-              <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "600" }}>
+              <label
+                style={{
+                  display: "block",
+                  marginBottom: "0.5rem",
+                  fontWeight: "600",
+                }}
+              >
                 Website (Optional)
               </label>
-              <input 
+              <input
                 type="url"
                 name="website"
                 value={formData.website}
                 onChange={handleChange}
-                style={{ width: "100%", padding: "0.75rem", border: "1px solid #ddd", borderRadius: "4px" }}
+                style={{
+                  width: "100%",
+                  padding: "0.75rem",
+                  border: "1px solid #ddd",
+                  borderRadius: "4px",
+                }}
               />
             </div>
           </div>
 
           <div style={{ marginTop: "1rem" }}>
-            <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "600" }}>
+            <label
+              style={{
+                display: "block",
+                marginBottom: "0.5rem",
+                fontWeight: "600",
+              }}
+            >
               Business Description *
             </label>
-            <textarea 
+            <textarea
               name="description"
               value={formData.description}
               onChange={handleChange}
               required
               rows={4}
-              style={{ width: "100%", padding: "0.75rem", border: "1px solid #ddd", borderRadius: "4px" }}
+              style={{
+                width: "100%",
+                padding: "0.75rem",
+                border: "1px solid #ddd",
+                borderRadius: "4px",
+              }}
             />
           </div>
         </section>
 
         <section style={{ paddingTop: "1rem", borderTop: "1px solid #ddd" }}>
-          <h2 style={{ fontSize: "1.2rem", marginBottom: "1rem" }}>Business Address</h2>
-          
+          <h2 style={{ fontSize: "1.2rem", marginBottom: "1rem" }}>
+            Business Address
+          </h2>
+
           <div style={{ marginBottom: "1rem" }}>
-            <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "600" }}>
+            <label
+              style={{
+                display: "block",
+                marginBottom: "0.5rem",
+                fontWeight: "600",
+              }}
+            >
               Street Address *
             </label>
-            <input 
+            <input
               type="text"
               name="street"
               value={formData.street}
               onChange={handleChange}
               required
-              style={{ width: "100%", padding: "0.75rem", border: "1px solid #ddd", borderRadius: "4px" }}
+              style={{
+                width: "100%",
+                padding: "0.75rem",
+                border: "1px solid #ddd",
+                borderRadius: "4px",
+              }}
             />
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1rem" }}>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: "1rem",
+              marginBottom: "1rem",
+            }}
+          >
             <div>
-              <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "600" }}>
+              <label
+                style={{
+                  display: "block",
+                  marginBottom: "0.5rem",
+                  fontWeight: "600",
+                }}
+              >
                 City *
               </label>
-              <input 
+              <input
                 type="text"
                 name="city"
                 value={formData.city}
                 onChange={handleChange}
                 required
-                style={{ width: "100%", padding: "0.75rem", border: "1px solid #ddd", borderRadius: "4px" }}
+                style={{
+                  width: "100%",
+                  padding: "0.75rem",
+                  border: "1px solid #ddd",
+                  borderRadius: "4px",
+                }}
               />
             </div>
             <div>
-              <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "600" }}>
+              <label
+                style={{
+                  display: "block",
+                  marginBottom: "0.5rem",
+                  fontWeight: "600",
+                }}
+              >
                 State *
               </label>
-              <input 
+              <input
                 type="text"
                 name="state"
                 value={formData.state}
                 onChange={handleChange}
                 required
-                style={{ width: "100%", padding: "0.75rem", border: "1px solid #ddd", borderRadius: "4px" }}
+                style={{
+                  width: "100%",
+                  padding: "0.75rem",
+                  border: "1px solid #ddd",
+                  borderRadius: "4px",
+                }}
               />
             </div>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: "1rem",
+            }}
+          >
             <div>
-              <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "600" }}>
+              <label
+                style={{
+                  display: "block",
+                  marginBottom: "0.5rem",
+                  fontWeight: "600",
+                }}
+              >
                 Postal Code *
               </label>
-              <input 
+              <input
                 type="text"
                 name="postalCode"
                 value={formData.postalCode}
                 onChange={handleChange}
                 required
-                style={{ width: "100%", padding: "0.75rem", border: "1px solid #ddd", borderRadius: "4px" }}
+                style={{
+                  width: "100%",
+                  padding: "0.75rem",
+                  border: "1px solid #ddd",
+                  borderRadius: "4px",
+                }}
               />
             </div>
             <div>
-              <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "600" }}>
+              <label
+                style={{
+                  display: "block",
+                  marginBottom: "0.5rem",
+                  fontWeight: "600",
+                }}
+              >
                 Country
               </label>
-              <input 
+              <input
                 type="text"
                 name="country"
                 value={formData.country}
                 disabled
-                style={{ width: "100%", padding: "0.75rem", border: "1px solid #ddd", borderRadius: "4px", backgroundColor: "#f5f5f5" }}
+                style={{
+                  width: "100%",
+                  padding: "0.75rem",
+                  border: "1px solid #ddd",
+                  borderRadius: "4px",
+                  backgroundColor: "#f5f5f5",
+                }}
               />
             </div>
           </div>
         </section>
 
         <section style={{ paddingTop: "1rem", borderTop: "1px solid #ddd" }}>
-          <h2 style={{ fontSize: "1.2rem", marginBottom: "1rem" }}>Bank Details</h2>
-          
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1rem" }}>
+          <h2 style={{ fontSize: "1.2rem", marginBottom: "1rem" }}>
+            Bank Details
+          </h2>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: "1rem",
+              marginBottom: "1rem",
+            }}
+          >
             <div>
-              <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "600" }}>
+              <label
+                style={{
+                  display: "block",
+                  marginBottom: "0.5rem",
+                  fontWeight: "600",
+                }}
+              >
                 Account Holder Name *
               </label>
-              <input 
+              <input
                 type="text"
                 name="accountHolderName"
                 value={formData.accountHolderName}
                 onChange={handleChange}
                 required
-                style={{ width: "100%", padding: "0.75rem", border: "1px solid #ddd", borderRadius: "4px" }}
+                style={{
+                  width: "100%",
+                  padding: "0.75rem",
+                  border: "1px solid #ddd",
+                  borderRadius: "4px",
+                }}
               />
             </div>
             <div>
-              <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "600" }}>
+              <label
+                style={{
+                  display: "block",
+                  marginBottom: "0.5rem",
+                  fontWeight: "600",
+                }}
+              >
                 Bank Name *
               </label>
-              <input 
+              <input
                 type="text"
                 name="bankName"
                 value={formData.bankName}
                 onChange={handleChange}
                 required
-                style={{ width: "100%", padding: "0.75rem", border: "1px solid #ddd", borderRadius: "4px" }}
+                style={{
+                  width: "100%",
+                  padding: "0.75rem",
+                  border: "1px solid #ddd",
+                  borderRadius: "4px",
+                }}
               />
             </div>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: "1rem",
+            }}
+          >
             <div>
-              <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "600" }}>
+              <label
+                style={{
+                  display: "block",
+                  marginBottom: "0.5rem",
+                  fontWeight: "600",
+                }}
+              >
                 Account Number *
               </label>
-              <input 
+              <input
                 type="text"
                 name="accountNumber"
                 value={formData.accountNumber}
                 onChange={handleChange}
                 required
-                style={{ width: "100%", padding: "0.75rem", border: "1px solid #ddd", borderRadius: "4px" }}
+                style={{
+                  width: "100%",
+                  padding: "0.75rem",
+                  border: "1px solid #ddd",
+                  borderRadius: "4px",
+                }}
               />
             </div>
             <div>
-              <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "600" }}>
+              <label
+                style={{
+                  display: "block",
+                  marginBottom: "0.5rem",
+                  fontWeight: "600",
+                }}
+              >
                 IFSC Code *
               </label>
-              <input 
+              <input
                 type="text"
                 name="ifscCode"
                 value={formData.ifscCode}
                 onChange={handleChange}
                 required
-                style={{ width: "100%", padding: "0.75rem", border: "1px solid #ddd", borderRadius: "4px" }}
+                style={{
+                  width: "100%",
+                  padding: "0.75rem",
+                  border: "1px solid #ddd",
+                  borderRadius: "4px",
+                }}
               />
             </div>
           </div>
         </section>
 
         <div style={{ display: "flex", gap: "1rem", paddingTop: "1rem" }}>
-          <button 
+          <button
             type="submit"
             disabled={loading}
             style={{
